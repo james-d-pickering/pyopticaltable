@@ -1,0 +1,1010 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>PyOpticalTable : Pain-Free Drawing of Optical Setups &#8212; PyOpticalTable  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">PyOpticalTable  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PyOpticalTable : Pain-Free Drawing of Optical Setups</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="toctree-wrapper compound">
+</div>
+<section id="pyopticaltable-pain-free-drawing-of-optical-setups">
+<h1>PyOpticalTable : Pain-Free Drawing of Optical Setups<a class="headerlink" href="#pyopticaltable-pain-free-drawing-of-optical-setups" title="Permalink to this headline">¶</a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p><strong>PyOpticalTable</strong> is a Python library designed to make it easy to create high-quality figures of optical setups, for use in papers, theses, or presentations. The figure creation is all done using <cite>matplotlib &lt;www.matplotlib.org&gt;</cite>, and <strong>PyOpticalTable</strong> essentially provides a user-friendly syntax for drawing the setup.</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="_images/complex_example.png"><img alt="_images/complex_example.png" src="_images/complex_example.png" style="width: 800px;" /></a>
+<figcaption>
+<p><span class="caption-text">Click image for the high-res version.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="why-bother-when-inkscape-exists">
+<h2>Why bother when Inkscape exists?<a class="headerlink" href="#why-bother-when-inkscape-exists" title="Permalink to this headline">¶</a></h2>
+<p>Anyone who has used inkscape to try and draw a complex optical setup will probably have experienced the following:</p>
+<ul class="simple">
+<li><p>Clicking and dragging things to place the optics is easy initially</p></li>
+<li><p>Actually getting it to be precise, so that it looks professional, is harder.</p></li>
+<li><p>When you need to adjust the position of an optic because a proof-reader corrected it, it’s a complete pain to readjust all the subsequent beam routing.</p></li>
+<li><p>When you need to resize the figure because the journal you’re submitting to don’t understand LaTeX, it makes everything look odd because the aspect ratio can change.</p></li>
+<li><p>Inkscape periodically will crash and freeze for no explicable reason.</p></li>
+</ul>
+<p>So whilst Inkscape (or another point-and-click graphics editor) is easy to use at the start, it quickly becomes the bane of your existence. <strong>PyOpticalTable</strong> solves the problems listed above:</p>
+<ul class="simple">
+<li><p>Using PyOpticalTable, you can place all the optics precisely using a coordinate system that is logical and intuitive - and you can set a temporary grid over the table to make finding the coordinates very easy.</p></li>
+<li><p>Using PyOpticalTable, the trajectory of the laser beam(s) is defined <em>by the position of the optics</em>, just like on a real optical table. So if you move an optic, the beam trajectory automatically reroutes itself to compensate.</p></li>
+<li><p>Using PyOpticalTable, all the graphics for the pre-defined optical elements will maintain their appearance if you change the figure size, aspect ratio, or rotation. So whatever you need to do to make the figure fit into where you want it, you won’t have to spend ages updating all of the individual components on the figure.</p></li>
+<li><p>Python IDEs freeze less often than inkscape (although this admittedly depends on IDE choice. Use vim for the sleekest experience.)</p></li>
+</ul>
+<p>The downsides of PyOpticalTable are:</p>
+<ul class="simple">
+<li><p>Using PyOpticalTable will mean there’s a bit of a learning curve if you don’t already know Python.</p></li>
+<li><p>If your optical setup is very simple (like, two mirrors and a box simple), then maybe it’s quicker to just use Inkscape.</p></li>
+</ul>
+</section>
+<section id="scope">
+<h2>Scope<a class="headerlink" href="#scope" title="Permalink to this headline">¶</a></h2>
+<p>Currently the inbuilt optics in PyOpticalTable include mirrors, beamsplitters, lenses, waveplates (any kind of flat transmissive plate - crystals, windows…), and polarisers. Also available are ways to make lasers ('box' sources), and generic point sources where beams can come from. Things like beam dumps are also included. There are a variety of helper functions and routines that make adding/creating your own specific optical elements straightforward too - most things are built up from simpler elements like line objects or arc patches.</p>
+<p>PyOpticalTable currently only deals with perfect laser beams, and so there isn’t any native way to draw a diverging beam that has a realistic divergence affected by a lens (although this can be approximated by using two LaserBeam objects). It is <em>not</em> a ray tracing program, and has been designed around making professional-looking figures for publications/theses - not for accurately simulating all of the optical physics.</p>
+</section>
+<section id="using-pyopticaltable">
+<h2>Using PyOpticalTable<a class="headerlink" href="#using-pyopticaltable" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="a-simple-example">
+<h2>A Simple Example<a class="headerlink" href="#a-simple-example" title="Permalink to this headline">¶</a></h2>
+<p>Here we will make a drawing of a simple optical layout involving one laser beam, to illustrate how the package works. The python file <code class="docutils literal notranslate"><span class="pre">simple_example.py</span></code> in the <em>examples</em> folder contains the code shown here.</p>
+<p>First we have to load the package:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyopticaltable</span> <span class="k">as</span> <span class="nn">pyopt</span>
+</pre></div>
+</div>
+<p>You can either put the file <code class="docutils literal notranslate"><span class="pre">pyopticaltable.py</span></code> in your working directory, or add it to your path so python can find it wherever you are.</p>
+<p>Now we need to set up our table:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">table</span> <span class="o">=</span> <span class="n">pyopt</span><span class="o">.</span><span class="n">OpticalTable</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">size_factor</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">show_edge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_grid</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This creates an <strong>OpticalTable</strong> object called <em>table</em>. The dimensions of the table <em>in terms of matplotlib axis coordinates</em> are 20 by 10 (width by height). The point (0,0) is at the center of the table, so the point (-10, -5) is the lower left corner. The dimensions of the table <em>in millimetres</em> are given by the dimensions in axis coordinates multiplied by the <strong>size_factor</strong> - which is equal to 10 here. Thus, our final figure will be 200mm by 100mm. This allows you to make the axis coordinates a nice round number to make placing optics easy, but also allows you to tweak the figure size so it will fit in a precisely defined column width without making the optic placement annoying.</p>
+<p>The two other keyword arguments affect how the table is displayed. <strong>show_edge</strong> draws a line around the table edge, so you can see where the limits of your table are. <strong>show_grid</strong> draws a faint grid over the table where the lines are spaced 1 matplotlib axis unit apart - so here there will be a 20x10 grid covering the table (note that you can also change the grid spacing, but the dimension divided by the spacing needs to be an integer). This grid is mostly useful for editing, as you can make the figure (running the script with just these two lines will make an empty table), and then mouse over the grid to see exactly what the coordinates of each point are. This makes it easier to get things to line up and be square - and you can then turn off the grid when you want to save the figure. See the docstrings for more information.</p>
+<p>Now we can also initialise the beam we are going to use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">beam</span> <span class="o">=</span> <span class="n">pyopt</span><span class="o">.</span><span class="n">LaserBeam</span><span class="p">(</span><span class="n">colour</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">)</span>
+<span class="n">beampath</span> <span class="o">=</span> <span class="p">[]</span>
+</pre></div>
+</div>
+<p>The first line here creates a <strong>LaserBeam</strong> object that will eventually be green (any matplotlib-allowed colour works fine) - see the docstrings for other arguments you can use. In the second line we create an empty list called <em>beampath</em>, which we will use when we come to actually route our beam through the optics. Let’s now place a laser that our beam can come from:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">laser</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">box_source</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">colour</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">output_side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Laser&#39;</span><span class="p">,</span> <span class="n">textcolour</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">labelpad</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will just put a box labelled <em>Laser</em> on the table, and the center of the box will be at (-5,0), and it is 4 grid spaces wide and 2 high (again see doctrings for detailed info). This box is an <strong>OpticalElement</strong> object that is called <em>laser</em>. The <strong>output_side</strong> kwarg determines where the beam will come from - it will originate from the right hand side of the box we placed. Having placed the laser, we can now append this object to the list <em>beampath</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">beampath</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">laser</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The beam will originate from the first object in the list <em>beampath</em> and then hit subsequent optical elements in the order they are in the list. So it’s easy to keep track of if you just append each object to the list after you make it. Alternatively, you can make all the objects and then add them to the list at once at the end - either works. Let’s add some mirrors for our beam to reflect off.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mirrorsize</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">mirror1</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">mirror</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">mirrorsize</span><span class="p">,</span><span class="mi">45</span><span class="p">)</span>
+<span class="n">beampath</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mirror1</span><span class="p">)</span>
+
+<span class="n">mirror2</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">mirror</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">mirrorsize</span><span class="p">,</span><span class="mi">45</span><span class="p">)</span>
+<span class="n">beampath</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mirror2</span><span class="p">)</span>
+
+<span class="n">mirror3</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">mirror</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">mirrorsize</span><span class="p">,</span><span class="o">-</span><span class="mi">45</span><span class="p">)</span>
+<span class="n">beampath</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mirror3</span><span class="p">)</span>
+
+<span class="n">mirror4</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">mirror</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">mirrorsize</span><span class="p">,</span><span class="o">-</span><span class="mi">45</span><span class="p">)</span>
+<span class="n">beampath</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mirror4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will add four OpticalElement mirror objects to the table. Note that all of the optical elements we can add are methods of the OpticalTable class (i.e. the syntax is table.element()). The (x,y) position of the center of each mirror is defined, and the size of the mirror (length of the line representing it) is set globally in the <strong>mirrorsize</strong> variable. By default, any mirror you add lies flat along the x-axis, and so the final argument is the angle to rotate the mirror from the positive x-axis - 45 degrees (or -45 degrees) is common, but any is possible (note that you can rotate all other optical elements too).</p>
+<p>After we add each mirror, we add the name each one to the <em>beampath</em> list, so that our beam takes the right route through them (note also that the beam will hit the mirror at the central point (x,y)). Let’s try drawing the beam now:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">beam</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">beampath</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we have a green beam drawn on the OpticalTable <em>table</em> which follows the path defined by <em>beampath</em>. The nice thing is that the beam path is <em>defined by the positions of the mirrors</em> - try and move one of the mirrors and watch the beam re-route itself. You could also add the mirrors in a different order to <em>beampath</em> if you wanted it to take a different route.</p>
+<p>Now we can add some more optics though, so let’s add these lines <strong>before</strong> we draw the beam:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">L1</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">convex_lens</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mirrorsize</span><span class="p">,</span> <span class="mi">90</span><span class="p">)</span>
+<span class="n">beampath</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">L1</span><span class="p">)</span>
+
+<span class="n">L2</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">concave_lens</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mirrorsize</span><span class="p">,</span> <span class="mi">270</span><span class="p">)</span>
+<span class="n">beampath</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">L2</span><span class="p">)</span>
+
+<span class="n">dump</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">beam_dump</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">fillcolour</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">beampath</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dump</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Adding two lenses like a telescope, and then putting a beam dump in to catch the beam at the end. There you have it! You can now turn off the grid and save the figure, or add more things, or do whatever you’d like to. You can see a more complex example in the <em>examples</em> folder too - one with multiple beams and things that aren’t all at right angles.</p>
+<img alt="_images/simple_example.png" src="_images/simple_example.png" />
+</section>
+<section id="module-pyopticaltable">
+<span id="detailed-docs"></span><h2>Detailed Docs<a class="headerlink" href="#module-pyopticaltable" title="Permalink to this headline">¶</a></h2>
+<p>PyOpticalTable – Library for drawing optical layouts.</p>
+<section id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>tools : helper functions for drawing and aligning optics correctly</p>
+<p>OpticalElement : contains info specific to a certain element</p>
+<p>OpticalTable : holds all elements, elements are methods of the table</p>
+<p>LaserBeam: draws beam between all listed elements</p>
+</div></blockquote>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyopticaltable.LaserBeam">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pyopticaltable.</span></span><span class="sig-name descname"><span class="pre">LaserBeam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">colour</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divergent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divergence_angle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.LaserBeam" title="Permalink to this definition">¶</a></dt>
+<dd><p>LaserBeam defines a laser beam that goes through the defined setup.</p>
+<p>When an instance of LaserBeam is created a beam with the given colour,
+linewidth, and linestyle is initialised, but not drawn. The beam is drawn
+when LaserBeam.draw(table, optics) is called. table is the OpticalTable instance
+to draw the beam onto, and optics is a list of the optics to pass through
+(in order of first to last hit).</p>
+<p>The idea of this is that the beam will be redrawn automatically if any optical
+elements are moved, removing the need to tediously reroute the whole beam by hand.
+Each OpticalElement instance contains an (x,y) coordinate which is where the beam will hit the optic.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyopticaltable.LaserBeam.colour">
+<span class="sig-name descname"><span class="pre">colour</span></span><a class="headerlink" href="#pyopticaltable.LaserBeam.colour" title="Permalink to this definition">¶</a></dt>
+<dd><p>Colour of the laser beam, any matplotlib defined colour is fine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyopticaltable.LaserBeam.width">
+<span class="sig-name descname"><span class="pre">width</span></span><a class="headerlink" href="#pyopticaltable.LaserBeam.width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Linewidth of the drawn laser beam (as defined in matplotlib).
+The default is 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyopticaltable.LaserBeam.style">
+<span class="sig-name descname"><span class="pre">style</span></span><a class="headerlink" href="#pyopticaltable.LaserBeam.style" title="Permalink to this definition">¶</a></dt>
+<dd><p>Linestyle of the drawn laser beam, see matplotlib docs for more details.
+The default is ‘-’ (unbroken line).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>string, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyopticaltable.LaserBeam.divergent">
+<span class="sig-name descname"><span class="pre">divergent</span></span><a class="headerlink" href="#pyopticaltable.LaserBeam.divergent" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyopticaltable.LaserBeam.divergence_angle">
+<span class="sig-name descname"><span class="pre">divergence_angle</span></span><a class="headerlink" href="#pyopticaltable.LaserBeam.divergence_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.LaserBeam.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optics</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.LaserBeam.draw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a laser beam on table between the OpticalElement instances in optics.</p>
+<p>The list optics is a list of OpticalElement instances, and the beam originates
+at the first element in the list, and passes through/reflects off each element
+sequentially. Thus, the ordering of the list is important to ensure correct beam routing.</p>
+<p>Beam parameters (colour, linewidth, linestyle) are controlled when the
+LaserBeam class is initialised.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table</strong> (<a class="reference internal" href="#pyopticaltable.OpticalTable" title="pyopticaltable.OpticalTable"><em>OpticalTable</em></a>) – The instance of OpticalTable the beam is drawn on.</p></li>
+<li><p><strong>optics</strong> (<em>list</em>) – List of OpticalElement instances.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalElement">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pyopticaltable.</span></span><span class="sig-name descname"><span class="pre">OpticalElement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.OpticalElement" title="Permalink to this definition">¶</a></dt>
+<dd><p>OpticalElement contains information specific to an optical element.</p>
+<p>An instance of this class is created whenever an optical element is added
+to the table.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalElement.x">
+<span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#pyopticaltable.OpticalElement.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>x coordinate of the optical element</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalElement.y">
+<span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#pyopticaltable.OpticalElement.y" title="Permalink to this definition">¶</a></dt>
+<dd><p>y coordinate of the optical element</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalElement.mode">
+<span class="sig-name descname"><span class="pre">mode</span></span><a class="headerlink" href="#pyopticaltable.OpticalElement.mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>mode of the optic - transmissive “t”, or reflective “r” (UNUSED)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalElement.angle">
+<span class="sig-name descname"><span class="pre">angle</span></span><a class="headerlink" href="#pyopticaltable.OpticalElement.angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>rotation angle of the optic relative to the x axis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalTable">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pyopticaltable.</span></span><span class="sig-name descname"><span class="pre">OpticalTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edgecolour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_spacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gridcolour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_edge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.OpticalTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>OpticalTable is where OpticalElements are placed, and forms the main
+drawing canvas.</p>
+<p>Calling OpticalTable will generate a figure to which optics (defined as
+methods of OpticalTable) will be added.</p>
+<p>The length and width determine the internal table coordinates used to place
+optics, and then also determine the final figure size in conjunction with size_factor.
+Essentially then the coordinates can be made into a sensible range for ease
+of use, and then the final figure size controlled with size_factor.
+The table is centered on the origin so the coordinates range from -length/2
+to length/2 and so on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>length</strong> (<em>int</em>) – Length (x dimension) of the table, in internal figure coordinates.</p></li>
+<li><p><strong>width</strong> (<em>int</em>) – Width (y dimension) of the table, in internal figure coordinates.</p></li>
+<li><p><strong>size_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – The length and width are each multiplied by the size factor to give
+the dimensions of the final figure in millimetres. The default is 10.</p></li>
+<li><p><strong>edgecolour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the border of the table, any matplotlib supported colour
+works. The default is ‘k’ (black).</p></li>
+<li><p><strong>grid_spacing</strong> (<em>float</em><em>, </em><em>optional</em>) – Spacing of lines shown on the table grid, in internal figure coordinates.
+Must be chosen such that there is an integer number of lines over the length. The default is 1.</p></li>
+<li><p><strong>gridcolour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the grid on the table, any matplotlib supported colour
+works. The default is ‘gray’.</p></li>
+<li><p><strong>show_edge</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true then the edge of the table is shown. The default is True.</p></li>
+<li><p><strong>show_grid</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true then a grid is shown over the table. The default is False.</p></li>
+<li><p><strong>show_labels</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true then coordinate labels are added to the grid. The default
+is False</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalTable.ax">
+<span class="sig-name descname"><span class="pre">ax</span></span><a class="headerlink" href="#pyopticaltable.OpticalTable.ax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Matplotlib axis containing the optical table figure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>AxesSubplot</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalTable.aspect_ratio">
+<span class="sig-name descname"><span class="pre">aspect_ratio</span></span><a class="headerlink" href="#pyopticaltable.OpticalTable.aspect_ratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ratio of the length to the width of the table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalTable.angled_line">
+<span class="sig-name descname"><span class="pre">angled_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.OpticalTable.angled_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a line centered at (x, y) of length size, rotated by an angle
+angle (in degrees).</p>
+<p>The line automatically scales itself if the aspect ratio is changed.</p>
+<p>This function is mostly called by the optical element generation functions
+but can also just be used to put a line somewhere (or get the coordinates of a line).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – x-coordinate of the centre of the line.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – y-coordinate of the centre of the line.</p></li>
+<li><p><strong>size</strong> (<em>float</em>) – Length of the line.</p></li>
+<li><p><strong>angle</strong> (<em>float</em>) – Rotation angle of the line anticlockwise from the x-axis, in degrees.</p></li>
+<li><p><strong>colour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the line, any matplotlib supported colour works.
+The default is ‘k’ (black).</p></li>
+<li><p><strong>show</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True then the line is plotted on the table. The default is True.</p></li>
+<li><p><strong>get_coords</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True then the coordinates of the two endpoints are returned as
+(x1, x2, y1, y2). The default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>x-dX</strong> (<em>float</em>) – Smaller of the two x coordinates of the line (x1).</p></li>
+<li><p><strong>x+dX</strong> (<em>float</em>) – Larger of the two x coordinates of the line (x2).</p></li>
+<li><p><strong>y-dy</strong> (<em>float</em>) – Smaller of the two y coordinates of the line (y1).</p></li>
+<li><p><strong>y+dY</strong> (<em>float</em>) – Larger of the two y coordinates of the line (y2).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalTable.beam_dump">
+<span class="sig-name descname"><span class="pre">beam_dump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillcolour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'top'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelpad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">textcolour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.OpticalTable.beam_dump" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a beam dump on the table.</p>
+<p>A beam dump is simply a filled in block where a beam can terminate.
+The zorder=10 ensures that the beam dump is always drawn on top of the beam,
+such that it looks like the beam is effectively blocked.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – x-coordinate of the centre of the optic.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – y-coordinate of the centre of the optic.</p></li>
+<li><p><strong>size</strong> (<em>float</em>) – Size of the optic.</p></li>
+<li><p><strong>angle</strong> (<em>float</em>) – Rotation of the optic anticlockwise from the positive x-axis, in degrees.</p></li>
+<li><p><strong>colour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the optic, any matplotlib supported colour works. The default is ‘k’.</p></li>
+<li><p><strong>fillcolour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour to fill the block with. The default is ‘k’.</p></li>
+<li><p><strong>label</strong> (<em>string</em><em>, </em><em>optional</em>) – Text to put in the label for the box. The default is None (no label).</p></li>
+<li><p><strong>label_pos</strong> (<em>string</em><em>, </em><em>optional</em>) – Position of the label relative to the box (‘top’, ‘bottom’, ‘left’, ‘right’).
+The default is “bottom”.</p></li>
+<li><p><strong>labelpad</strong> (<em>float</em><em>, </em><em>optional</em>) – Additional padding to add between the label and the box. The default is 0.25.</p></li>
+<li><p><strong>textcolour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the label text. The default is ‘k’ (black).</p></li>
+<li><p><strong>fontsize</strong> (<em>float</em><em>, </em><em>optional</em>) – Font size for the label text. The default is fontparams[‘fontsize’].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Instance of the OpticalElement class for this optic.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyopticaltable.OpticalElement" title="pyopticaltable.OpticalElement">OpticalElement</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalTable.beamsplitter_cube">
+<span class="sig-name descname"><span class="pre">beamsplitter_cube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'top'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelpad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">textcolour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.OpticalTable.beamsplitter_cube" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – x-coordinate of the centre of the optic.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – y-coordinate of the centre of the optic.</p></li>
+<li><p><strong>size</strong> (<em>float</em>) – Size of the optic.</p></li>
+<li><p><strong>angle</strong> (<em>float</em>) – Rotation of the optic anticlockwise from the positive x-axis, in degrees.</p></li>
+<li><p><strong>direction</strong> (<em>string</em>) – Direction of the reflective surface in the beamsplitter, allowed
+values are “L” and “R”.</p></li>
+<li><p><strong>colour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the optic, any matplotlib supported colour works. The default is ‘k’.</p></li>
+<li><p><strong>label</strong> (<em>string</em><em>, </em><em>optional</em>) – Text to put in the label for the optic. The default is None (no label).</p></li>
+<li><p><strong>label_pos</strong> (<em>string</em><em>, </em><em>optional</em>) – Position of the label relative to the optic (‘top’, ‘bottom’, ‘left’, ‘right’).
+The default is “bottom”.</p></li>
+<li><p><strong>labelpad</strong> (<em>float</em><em>, </em><em>optional</em>) – Additional padding to add between the label and the optic. The default is 0.25.</p></li>
+<li><p><strong>textcolour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the label text. The default is ‘k’ (black).</p></li>
+<li><p><strong>fontsize</strong> (<em>float</em><em>, </em><em>optional</em>) – Font size for the label text. The default is fontparams[‘fontsize’].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Raised if a direction other than “L” or “R” is entered.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Instance of the OpticalElement class for this optic.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#pyopticaltable.OpticalElement" title="pyopticaltable.OpticalElement">OpticalElement</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalTable.box">
+<span class="sig-name descname"><span class="pre">box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standalone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'top'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelpad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">textcolour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.OpticalTable.box" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a rectangular box of arbitrary size and rotation angle.</p>
+<p>The box can be drawn on the table (if standalone=True), otherwise the
+corner coordinates of the box are returned from the function to use in
+other functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>float</em>) – x-coordinate of the centre of the box.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>y<span class="classifier">float</span></dt><dd><p>y-coordinate of the centre of the box.</p>
+</dd>
+<dt>size_x<span class="classifier">float</span></dt><dd><p>Size of the box in the x direction.</p>
+</dd>
+<dt>size_y<span class="classifier">float</span></dt><dd><p>Size of the box in the y direction.</p>
+</dd>
+<dt>angle<span class="classifier">float</span></dt><dd><p>Rotation of the box anticlockwise from the positive x-axis, in degrees.</p>
+</dd>
+<dt>colour<span class="classifier">string, optional</span></dt><dd><p>Colour of the box edge, any matplotlib supported colour works. The default is ‘k’.</p>
+</dd>
+<dt>standalone<span class="classifier">bool, optional</span></dt><dd><p>If true then the box is drawn on the table as it is, otherwise just
+the corner coordinates are returned for use in other functions. The default is False.</p>
+</dd>
+<dt>label<span class="classifier">string, optional</span></dt><dd><p>Text to put in the label for the box. The default is None (no label).</p>
+</dd>
+<dt>label_pos<span class="classifier">string, optional</span></dt><dd><p>Position of the label relative to the box (‘top’, ‘bottom’, ‘left’, ‘right’).
+The default is “bottom”.</p>
+</dd>
+<dt>labelpad<span class="classifier">float, optional</span></dt><dd><p>Additional padding to add between the label and the box. The default is 0.25.</p>
+</dd>
+<dt>textcolour<span class="classifier">string, optional</span></dt><dd><p>Colour of the label text. The default is ‘k’ (black).</p>
+</dd>
+<dt>fontsize<span class="classifier">float, optional</span></dt><dd><p>Font size for the label text. The default is fontparams[‘fontsize’].</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>OpticalElement</em> – Instance of the OpticalElement class for this optic (if standalone=True)</p></li>
+<li><p><strong>corners_rot</strong> (<em>list</em>) – List of the corner coordinates (anticlockwise from bottom left) of
+the box (if standalone=False).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalTable.box_source">
+<span class="sig-name descname"><span class="pre">box_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_side</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'top'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelpad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">textcolour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.OpticalTable.box_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a box on the table that a laser beam can come from.</p>
+<p>Box is centered on (x, y), and the beam will come from the midpoint of
+one of the four sides, determined by the string passed via output_side.
+Allowed sides are ‘top’, ‘bottom’, ‘left’, ‘right’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – x-coordinate of the centre of the box.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – y-coordinate of the centre of the box.</p></li>
+<li><p><strong>size_x</strong> (<em>float</em>) – Size of the box in the x direction.</p></li>
+<li><p><strong>size_y</strong> (<em>float</em>) – Size of the box in the y direction.</p></li>
+<li><p><strong>angle</strong> (<em>float</em>) – Rotation of the box anticlockwise from the positive x-axis, in degrees.</p></li>
+<li><p><strong>output_side</strong> (<em>string</em>) – Which side of the box the beam will come from, allowed values ‘top’,
+‘bottom’, ‘left’, ‘right’.</p></li>
+<li><p><strong>colour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the box edge, any matplotlib supported colour works. The default is ‘k’.</p></li>
+<li><p><strong>label</strong> (<em>string</em><em>, </em><em>optional</em>) – Text to put in the label for the box. The default is None (no label).</p></li>
+<li><p><strong>label_pos</strong> (<em>string</em><em>, </em><em>optional</em>) – Position of the label relative to the box (‘top’, ‘bottom’, ‘left’, ‘right’).
+The default is “bottom”.</p></li>
+<li><p><strong>labelpad</strong> (<em>float</em><em>, </em><em>optional</em>) – Additional padding to add between the label and the box. The default is 0.25.</p></li>
+<li><p><strong>textcolour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the label text. The default is ‘k’ (black).</p></li>
+<li><p><strong>fontsize</strong> (<em>float</em><em>, </em><em>optional</em>) – Font size for the label text. The default is fontparams[‘fontsize’].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – Raised if an invalid output side is entered.</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Instance of the OpticalElement class for this optic.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#pyopticaltable.OpticalElement" title="pyopticaltable.OpticalElement">OpticalElement</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalTable.concave_lens">
+<span class="sig-name descname"><span class="pre">concave_lens</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lens_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'top'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelpad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">textcolour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.OpticalTable.concave_lens" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a concave lens on the optical table.</p>
+<p>The beam passes through the point (x,y), which is the centre of the curved
+side of the lens.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – x-coordinate of the centre of the curved face of the lens.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – y-coordinate of the centre of the curved face of the lens.</p></li>
+<li><p><strong>size</strong> (<em>float</em>) – Size of the optic.</p></li>
+<li><p><strong>angle</strong> (<em>float</em>) – Rotation of the optic anticlockwise from the positive x-axis, in
+degrees.</p></li>
+<li><p><strong>colour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the optic, any matplotlib supported colour works.
+The default is ‘k’.</p></li>
+<li><p><strong>offset_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – How thick the concave lens is. The default is 0.05.</p></li>
+<li><p><strong>lens_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – Controls how curved the lens is (how “lens-y” it looks). The default is 4.</p></li>
+<li><p><strong>label</strong> (<em>string</em><em>, </em><em>optional</em>) – Text to put in the label for the optic. The default is None (no label).</p></li>
+<li><p><strong>label_pos</strong> (<em>string</em><em>, </em><em>optional</em>) – Position of the label relative to the optic (‘top’, ‘bottom’, ‘left’, ‘right’).
+The default is “bottom”.</p></li>
+<li><p><strong>labelpad</strong> (<em>float</em><em>, </em><em>optional</em>) – Additional padding to add between the label and the optic.
+The default is 0.25.</p></li>
+<li><p><strong>textcolour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the label text. The default is ‘k’ (black).</p></li>
+<li><p><strong>fontsize</strong> (<em>float</em><em>, </em><em>optional</em>) – Font size for the label text. The default is fontparams[‘fontsize’].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Instance of the OpticalElement class for this optic.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyopticaltable.OpticalElement" title="pyopticaltable.OpticalElement">OpticalElement</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalTable.concave_mirror">
+<span class="sig-name descname"><span class="pre">concave_mirror</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lens_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'top'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelpad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">textcolour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.OpticalTable.concave_mirror" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a concave mirror on the optical table.</p>
+<p>The beam will hit the mirror at the point (x, y).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – x-coordinate of the centre of the optic.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – y-coordinate of the centre of the optic.</p></li>
+<li><p><strong>size</strong> (<em>float</em>) – Size of the optic.</p></li>
+<li><p><strong>angle</strong> (<em>float</em>) – Rotation of the optic anticlockwise from the positive x-axis, in degrees.</p></li>
+<li><p><strong>colour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the optic, any matplotlib supported colour works. The default is ‘k’.</p></li>
+<li><p><strong>lens_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – Controls how curved the mirror is (how “lens-y” it looks). The default is 1.</p></li>
+<li><p><strong>label</strong> (<em>string</em><em>, </em><em>optional</em>) – Text to put in the label for the optic. The default is None (no label).</p></li>
+<li><p><strong>label_pos</strong> (<em>string</em><em>, </em><em>optional</em>) – Position of the label relative to the optic (‘top’, ‘bottom’, ‘left’, ‘right’).
+The default is “bottom”.</p></li>
+<li><p><strong>labelpad</strong> (<em>float</em><em>, </em><em>optional</em>) – Additional padding to add between the label and the optic. The default is 0.25.</p></li>
+<li><p><strong>textcolour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the label text. The default is ‘k’ (black).</p></li>
+<li><p><strong>fontsize</strong> (<em>float</em><em>, </em><em>optional</em>) – Font size for the label text. The default is fontparams[‘fontsize’].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Instance of the OpticalElement class for this optic.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyopticaltable.OpticalElement" title="pyopticaltable.OpticalElement">OpticalElement</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalTable.convex_lens">
+<span class="sig-name descname"><span class="pre">convex_lens</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lens_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'top'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelpad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">textcolour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.OpticalTable.convex_lens" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a convex lens on the optical table.</p>
+<p>The beam will pass through the point (x,y), which is the centre of the
+flat face of the lens.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – x-coordinate of the centre of the flat face of the lens.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – y-coordinate of the centre of the flat face of the lens.</p></li>
+<li><p><strong>size</strong> (<em>float</em>) – Size of the optic.</p></li>
+<li><p><strong>angle</strong> (<em>float</em>) – Rotation of the optic anticlockwise from the positive x-axis, in degrees.</p></li>
+<li><p><strong>colour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the optic, any matplotlib supported colour works. The default is ‘k’.</p></li>
+<li><p><strong>lens_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – Controls how curved the lens is (how “lens-y” it looks). The default is 2.</p></li>
+<li><p><strong>label</strong> (<em>string</em><em>, </em><em>optional</em>) – Text to put in the label for the optic. The default is None (no label).</p></li>
+<li><p><strong>label_pos</strong> (<em>string</em><em>, </em><em>optional</em>) – Position of the label relative to the optic (‘top’, ‘bottom’, ‘left’, ‘right’).
+The default is “bottom”.</p></li>
+<li><p><strong>labelpad</strong> (<em>float</em><em>, </em><em>optional</em>) – Additional padding to add between the label and the optic. The default is 0.25.</p></li>
+<li><p><strong>textcolour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the label text. The default is ‘k’ (black).</p></li>
+<li><p><strong>fontsize</strong> (<em>float</em><em>, </em><em>optional</em>) – Font size for the label text. The default is fontparams[‘fontsize’].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Instance of the OpticalElement class for this optic.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyopticaltable.OpticalElement" title="pyopticaltable.OpticalElement">OpticalElement</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalTable.generic_circle">
+<span class="sig-name descname"><span class="pre">generic_circle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillcolour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'top'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelpad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">textcolour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.OpticalTable.generic_circle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a circle on the optical table centered at (x,y).</p>
+<p>The radius of the circle is determined by the size parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – x-coordinate of the centre of the circle.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – y-coordinate of the centre of the circle.</p></li>
+<li><p><strong>size</strong> (<em>float</em>) – Radius of the circle.</p></li>
+<li><p><strong>colour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the edge of the circle. The default is ‘k’.</p></li>
+<li><p><strong>fill</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True then the circle is filled with fillcolour. The default is False.</p></li>
+<li><p><strong>fillcolour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour to fill the circle with. The default is ‘k’.</p></li>
+<li><p><strong>label</strong> (<em>string</em><em>, </em><em>optional</em>) – Text to put in the label for the box. The default is None (no label).</p></li>
+<li><p><strong>label_pos</strong> (<em>string</em><em>, </em><em>optional</em>) – Position of the label relative to the box (‘top’, ‘bottom’, ‘left’, ‘right’).
+The default is “bottom”.</p></li>
+<li><p><strong>labelpad</strong> (<em>float</em><em>, </em><em>optional</em>) – Additional padding to add between the label and the box. The default is 0.25.</p></li>
+<li><p><strong>textcolour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the label text. The default is ‘k’ (black).</p></li>
+<li><p><strong>fontsize</strong> (<em>float</em><em>, </em><em>optional</em>) – Font size for the label text. The default is fontparams[‘fontsize’].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Instance of the OpticalElement class for this optic.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyopticaltable.OpticalElement" title="pyopticaltable.OpticalElement">OpticalElement</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalTable.mirror">
+<span class="sig-name descname"><span class="pre">mirror</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bottom'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelpad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">textcolour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.OpticalTable.mirror" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a mirror on the optical table.</p>
+<p>A mirror is simply an angled line. Laser beams will bounce off the
+middle of the mirror, at the point (x,y).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – x-coordinate of the centre of the optic.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – y-coordinate of the centre of the optic.</p></li>
+<li><p><strong>size</strong> (<em>float</em>) – Size of the optic.</p></li>
+<li><p><strong>angle</strong> (<em>float</em>) – Rotation of the optic anticlockwise from the positive x-axis, in degrees.</p></li>
+<li><p><strong>colour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the optic, any matplotlib supported colour works. The default is ‘k’.</p></li>
+<li><p><strong>label</strong> (<em>string</em><em>, </em><em>optional</em>) – Text to put in the label for the optic. The default is None (no label).</p></li>
+<li><p><strong>label_pos</strong> (<em>string</em><em>, </em><em>optional</em>) – Position of the label relative to the optic (‘top’, ‘bottom’, ‘left’, ‘right’). The default is “bottom”.</p></li>
+<li><p><strong>labelpad</strong> (<em>float</em><em>, </em><em>optional</em>) – Additional padding to add between the label and the optic. The default is 0.25.</p></li>
+<li><p><strong>textcolour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the label text. The default is ‘k’ (black).</p></li>
+<li><p><strong>fontsize</strong> (<em>float</em><em>, </em><em>optional</em>) – Font size for the label text. The default is fontparams[‘fontsize’].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Instance of the OpticalElement class for this optic.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyopticaltable.OpticalElement" title="pyopticaltable.OpticalElement">OpticalElement</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalTable.point_source">
+<span class="sig-name descname"><span class="pre">point_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'top'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelpad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">textcolour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.OpticalTable.point_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a source for a laser beam at (x,y).</p>
+<p>The source is not visible on the table, but just serves as a place where
+a beam can emanate from/pass through.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – x-coordinate of the point.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – y-coordinate of the point.</p></li>
+<li><p><strong>label</strong> (<em>string</em><em>, </em><em>optional</em>) – Text to put in the label for the box. The default is None (no label).</p></li>
+<li><p><strong>label_pos</strong> (<em>string</em><em>, </em><em>optional</em>) – Position of the label relative to the box (‘top’, ‘bottom’, ‘left’, ‘right’).
+The default is “bottom”.</p></li>
+<li><p><strong>labelpad</strong> (<em>float</em><em>, </em><em>optional</em>) – Additional padding to add between the label and the box. The default is 0.25.</p></li>
+<li><p><strong>textcolour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the label text. The default is ‘k’ (black).</p></li>
+<li><p><strong>fontsize</strong> (<em>float</em><em>, </em><em>optional</em>) – Font size for the label text. The default is fontparams[‘fontsize’].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Instance of the OpticalElement class for this optic.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyopticaltable.OpticalElement" title="pyopticaltable.OpticalElement">OpticalElement</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalTable.set_label">
+<span class="sig-name descname"><span class="pre">set_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelpad</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">textcolour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.OpticalTable.set_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Put a label on an optical element.</p>
+<p>If the label is None then this does nothing.</p>
+<p>Label coordinates are determined dynamically by the optic coordinates,
+optic size, and any padding added by the user. The position relative
+to the optic is determined by passing label_pos (‘top’, ‘bottom’, ‘left’, ‘right’).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axis</strong> (<em>AxesSubplot</em>) – Axis to put the label onto.</p></li>
+<li><p><strong>x</strong> (<em>float</em>) – x-coordinate of the optic to be labelled.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – y-coordinate of the optic to be labelled.</p></li>
+<li><p><strong>size</strong> (<em>float</em>) – Size of the optic to be labelled.</p></li>
+<li><p><strong>label</strong> (<em>string</em>) – Text to put in the label.</p></li>
+<li><p><strong>label_pos</strong> (<em>string</em>) – Position of the label relative to the optic (‘top’, ‘bottom’, ‘left’, ‘right’).</p></li>
+<li><p><strong>labelpad</strong> (<em>float</em>) – Additional padding to add between the label and the optic.</p></li>
+<li><p><strong>textcolour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the label text. Default is ‘k’ (black).</p></li>
+<li><p><strong>fontsize</strong> (<em>float</em><em>, </em><em>optional</em>) – Font size for the label text. The default is fontparams[‘fontsize’].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalTable.transmissive_cube">
+<span class="sig-name descname"><span class="pre">transmissive_cube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'top'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelpad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">textcolour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.OpticalTable.transmissive_cube" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a transmissive cube (i.e a square) on the optical table.</p>
+<p>The square is centered at (x,y) and the beam passes through the centre.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – x-coordinate of the centre of the optic.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – y-coordinate of the centre of the optic.</p></li>
+<li><p><strong>size</strong> (<em>float</em>) – Size of the optic.</p></li>
+<li><p><strong>angle</strong> (<em>float</em>) – Rotation of the optic anticlockwise from the positive x-axis, in degrees.</p></li>
+<li><p><strong>colour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the optic, any matplotlib supported colour works. The default is ‘k’.</p></li>
+<li><p><strong>label</strong> (<em>string</em><em>, </em><em>optional</em>) – Text to put in the label for the optic. The default is None (no label).</p></li>
+<li><p><strong>label_pos</strong> (<em>string</em><em>, </em><em>optional</em>) – Position of the label relative to the optic (‘top’, ‘bottom’, ‘left’, ‘right’).
+The default is “bottom”.</p></li>
+<li><p><strong>labelpad</strong> (<em>float</em><em>, </em><em>optional</em>) – Additional padding to add between the label and the optic. The default is 0.25.</p></li>
+<li><p><strong>textcolour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the label text. The default is ‘k’ (black).</p></li>
+<li><p><strong>fontsize</strong> (<em>float</em><em>, </em><em>optional</em>) – Font size for the label text. The default is fontparams[‘fontsize’].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Instance of the OpticalElement class for this optic.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyopticaltable.OpticalElement" title="pyopticaltable.OpticalElement">OpticalElement</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.OpticalTable.transmissive_plate">
+<span class="sig-name descname"><span class="pre">transmissive_plate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fillcolour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'top'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelpad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">textcolour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zorder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.OpticalTable.transmissive_plate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a transmissive plate on the optical table.</p>
+<p>A generic transmissive plate but is useful for waveplates, crystals,
+filters, windows etc… with appropriate labelling.</p>
+<p>The beam passes through the point (x,y), which is at the centre of the plate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – x-coordinate of the centre of the optic.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – y-coordinate of the centre of the optic.</p></li>
+<li><p><strong>size</strong> (<em>float</em>) – Size of the optic.</p></li>
+<li><p><strong>angle</strong> (<em>float</em>) – Rotation of the optic anticlockwise from the positive x-axis, in degrees.</p></li>
+<li><p><strong>colour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the optic, any matplotlib supported colour works. The default is ‘k’.</p></li>
+<li><p><strong>offset_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – How thick the transmissive plate is. The default is 0.05.</p></li>
+<li><p><strong>fill</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true then the plate is filled with a colour. The default is False.</p></li>
+<li><p><strong>fillcolour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour to fill the plate with. The default is ‘k’.</p></li>
+<li><p><strong>label</strong> (<em>string</em><em>, </em><em>optional</em>) – Text to put in the label for the optic. The default is None (no label).</p></li>
+<li><p><strong>label_pos</strong> (<em>string</em><em>, </em><em>optional</em>) – Position of the label relative to the optic (‘top’, ‘bottom’, ‘left’, ‘right’).
+The default is “bottom”.</p></li>
+<li><p><strong>labelpad</strong> (<em>float</em><em>, </em><em>optional</em>) – Additional padding to add between the label and the optic. The default is 0.25.</p></li>
+<li><p><strong>textcolour</strong> (<em>string</em><em>, </em><em>optional</em>) – Colour of the label text. The default is ‘k’ (black).</p></li>
+<li><p><strong>fontsize</strong> (<em>float</em><em>, </em><em>optional</em>) – Font size for the label text. The default is fontparams[‘fontsize’].</p></li>
+<li><p><strong>zorder</strong> (<em>int</em><em>, </em><em>optional</em>) – Zorder for the transmissive plate (controls drawing order). The default is 2.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Instance of the OpticalElement class for this optic.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyopticaltable.OpticalElement" title="pyopticaltable.OpticalElement">OpticalElement</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyopticaltable.Tools">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">pyopticaltable.</span></span><span class="sig-name descname"><span class="pre">Tools</span></span><a class="headerlink" href="#pyopticaltable.Tools" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tools contains functions that help with drawing and aligning optics correctly.</p>
+<p>Tools is normally not called by the end user, but it is used in other classes
+to ensure optics are placed and rotated correctly.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.Tools.cosd">
+<span class="sig-name descname"><span class="pre">cosd</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.Tools.cosd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return cosine of an angle in degrees.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.Tools.deg_to_rad">
+<span class="sig-name descname"><span class="pre">deg_to_rad</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.Tools.deg_to_rad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert degrees to radians.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.Tools.get_label_coords">
+<span class="sig-name descname"><span class="pre">get_label_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelpad</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.Tools.get_label_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the coordinates where the label for an optic should be.</p>
+<p>Calculates them based on the position and size of the optic. User defined
+labelpad can also be used to further move the label.</p>
+<p>Label position is determined by the label_pos parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label_pos</strong> (<em>string</em>) – String determining label position relative to the optic. Allowable
+values are ‘top’, ‘bottom’, ‘left’, ‘right’.</p></li>
+<li><p><strong>x</strong> (<em>float</em>) – x-coordinate of the optical element being labelled.</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – y-coordinate of the optical element being labelled.</p></li>
+<li><p><strong>size</strong> (<em>float</em>) – size of optical element being labelled.</p></li>
+<li><p><strong>labelpad</strong> (<em>float</em>) – additional space to put between optic and label.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>label_x</strong> (<em>float</em>) – x-coordinate of label position.</p></li>
+<li><p><strong>label_y</strong> (<em>TYPE</em>) – y-coordinate of label position.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.Tools.get_midpoint">
+<span class="sig-name descname"><span class="pre">get_midpoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.Tools.get_midpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the midpoint of a line.</p>
+<p>Line is loaded as a tuple of points ( (x1, y1), (x2, y2) )</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>line</strong> (<em>tuple</em>) – Contains two points (as tuples (x,y)) that define the line.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>midpoint</strong> – The midpoint of the line (midpoint_x, midpoint_y)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.Tools.inch_to_mm">
+<span class="sig-name descname"><span class="pre">inch_to_mm</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.Tools.inch_to_mm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert inches to millimetre.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.Tools.mm_to_inch">
+<span class="sig-name descname"><span class="pre">mm_to_inch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.Tools.mm_to_inch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert millimetre to inches.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.Tools.rotate_point">
+<span class="sig-name descname"><span class="pre">rotate_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.Tools.rotate_point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotate a point by an angle theta around the origin.</p>
+<p>Used for rotating optics around their centre. Uses a simple 2D rotation
+matrix (written out in longhand).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>point</strong> (<em>tuple</em>) – Coordinates (x,y) of the point to be rotated relative to (0,0).</p></li>
+<li><p><strong>angle</strong> (<em>float</em>) – Angle in degrees to rotate the point by.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>point_rot</strong> – Coordinates of the rotated point (x_rot, y_rot).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopticaltable.Tools.sind">
+<span class="sig-name descname"><span class="pre">sind</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyopticaltable.Tools.sind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return sine of an angle in degrees.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">PyOpticalTable : Pain-Free Drawing of Optical Setups</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#why-bother-when-inkscape-exists">Why bother when Inkscape exists?</a></li>
+<li><a class="reference internal" href="#scope">Scope</a></li>
+<li><a class="reference internal" href="#using-pyopticaltable">Using PyOpticalTable</a></li>
+<li><a class="reference internal" href="#a-simple-example">A Simple Example</a></li>
+<li><a class="reference internal" href="#module-pyopticaltable">Detailed Docs</a><ul>
+<li><a class="reference internal" href="#classes">Classes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">PyOpticalTable  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PyOpticalTable : Pain-Free Drawing of Optical Setups</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, jdpicks.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>
