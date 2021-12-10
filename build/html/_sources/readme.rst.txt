@@ -11,6 +11,8 @@ Overview
 
     Click image for the high-res version.
 
+You can download **PyOpticalTable** from `github <https://github.com/james-d-pickering/pyopticaltable>`. Just download *pyopticaltable.py* and use it as a Python module.
+
 Why bother when Inkscape exists?
 -------------------------------------
 
