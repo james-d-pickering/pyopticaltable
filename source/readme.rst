@@ -4,14 +4,14 @@ PyOpticalTable : Pain-Free Drawing of Optical Setups
 Overview
 -----------------------
 
-**PyOpticalTable** is a Python library designed to make it easy to create high-quality figures of optical setups, for use in papers, theses, or presentations. The figure creation is all done using `matplotlib <www.matplotlib.org>`, and **PyOpticalTable** essentially provides a user-friendly syntax for drawing the setup. 
+**PyOpticalTable** is a Python library designed to make it easy to create high-quality figures of optical setups, for use in papers, theses, or presentations. The figure creation is all done using `matplotlib <www.matplotlib.org>`_, and **PyOpticalTable** essentially provides a user-friendly syntax for drawing the setup. 
 
 .. figure:: ./complex_example.png
     :width: 800px
 
     Click image for the high-res version.
 
-You can download **PyOpticalTable** from `github <https://github.com/james-d-pickering/pyopticaltable>`. Just download *pyopticaltable.py* and use it as a Python module.
+You can download **PyOpticalTable** from `github <https://github.com/james-d-pickering/pyopticaltable>`_. Just download *pyopticaltable.py* and use it as a Python module.
 
 Why bother when Inkscape exists?
 -------------------------------------
