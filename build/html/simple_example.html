@@ -1,0 +1,147 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>A Simple Example &#8212; PyOpticalTable  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyOpticalTable  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">A Simple Example</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="a-simple-example">
+<h1>A Simple Example<a class="headerlink" href="#a-simple-example" title="Permalink to this headline">¶</a></h1>
+<p>Here we will make a drawing of a simple optical layout involving one laser beam, to illustrate how the package works. The python file <code class="docutils literal notranslate"><span class="pre">simple_example.py</span></code> in the <em>examples</em> folder contains the code shown here.</p>
+<p>First we have to load the package:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pyopticaltable</span> <span class="k">as</span> <span class="nn">pyopt</span>
+</pre></div>
+</div>
+<p>You can either put the file <code class="docutils literal notranslate"><span class="pre">pyopticaltable.py</span></code> in your working directory, or add it to your path so python can find it wherever you are.</p>
+<p>Now we need to set up our table:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">table</span> <span class="o">=</span> <span class="n">pyopt</span><span class="o">.</span><span class="n">OpticalTable</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">size_factor</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">show_edge</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_grid</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This creates an <strong>OpticalTable</strong> object called <em>table</em>. The dimensions of the table <em>in terms of matplotlib axis coordinates</em> are 20 by 10 (width by height). The point (0,0) is at the center of the table, so the point (-10, -5) is the lower left corner. The dimensions of the table <em>in millimetres</em> are given by the dimensions in axis coordinates multiplied by the <strong>size_factor</strong> - which is equal to 10 here. Thus, our final figure will be 200mm by 100mm. This allows you to make the axis coordinates a nice round number to make placing optics easy, but also allows you to tweak the figure size so it will fit in a precisely defined column width without making the optic placement annoying.</p>
+<p>The two other keyword arguments affect how the table is displayed. <strong>show_edge</strong> draws a line around the table edge, so you can see where the limits of your table are. <strong>show_grid</strong> draws a faint grid over the table where the lines are spaced 1 matplotlib axis unit apart - so here there will be a 20x10 grid covering the table (note that you can also change the grid spacing, but the dimension divided by the spacing needs to be an integer). This grid is mostly useful for editing, as you can make the figure (running the script with just these two lines will make an empty table), and then mouse over the grid to see exactly what the coordinates of each point are. This makes it easier to get things to line up and be square - and you can then turn off the grid when you want to save the figure. See the docstrings for more information.</p>
+<p>Now we can also initialise the beam we are going to use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">beam</span> <span class="o">=</span> <span class="n">pyopt</span><span class="o">.</span><span class="n">LaserBeam</span><span class="p">(</span><span class="n">colour</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">)</span>
+<span class="n">beampath</span> <span class="o">=</span> <span class="p">[]</span>
+</pre></div>
+</div>
+<p>The first line here creates a <strong>LaserBeam</strong> object that will eventually be green (any matplotlib-allowed colour works fine) - see the docstrings for other arguments you can use. In the second line we create an empty list called <em>beampath</em>, which we will use when we come to actually route our beam through the optics. Let’s now place a laser that our beam can come from:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">laser</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">box_source</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">colour</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">output_side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Laser&#39;</span><span class="p">,</span> <span class="n">textcolour</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">labelpad</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will just put a box labelled <em>Laser</em> on the table, and the center of the box will be at (-5,0), and it is 4 grid spaces wide and 2 high (again see doctrings for detailed info). This box is an <strong>OpticalElement</strong> object that is called <em>laser</em>. The <strong>output_side</strong> kwarg determines where the beam will come from - it will originate from the right hand side of the box we placed. Having placed the laser, we can now append this object to the list <em>beampath</em>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">beampath</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">laser</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The beam will originate from the first object in the list <em>beampath</em> and then hit subsequent optical elements in the order they are in the list. So it’s easy to keep track of if you just append each object to the list after you make it. Alternatively, you can make all the objects and then add them to the list at once at the end - either works. Let’s add some mirrors for our beam to reflect off.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mirrorsize</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">mirror1</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">mirror</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">mirrorsize</span><span class="p">,</span><span class="mi">45</span><span class="p">)</span>
+<span class="n">beampath</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mirror1</span><span class="p">)</span>
+
+<span class="n">mirror2</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">mirror</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">mirrorsize</span><span class="p">,</span><span class="mi">45</span><span class="p">)</span>
+<span class="n">beampath</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mirror2</span><span class="p">)</span>
+
+<span class="n">mirror3</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">mirror</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">mirrorsize</span><span class="p">,</span><span class="o">-</span><span class="mi">45</span><span class="p">)</span>
+<span class="n">beampath</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mirror3</span><span class="p">)</span>
+
+<span class="n">mirror4</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">mirror</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">mirrorsize</span><span class="p">,</span><span class="o">-</span><span class="mi">45</span><span class="p">)</span>
+<span class="n">beampath</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mirror4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will add four OpticalElement mirror objects to the table. Note that all of the optical elements we can add are methods of the OpticalTable class (i.e. the syntax is table.element()). The (x,y) position of the center of each mirror is defined, and the size of the mirror (length of the line representing it) is set globally in the <strong>mirrorsize</strong> variable. By default, any mirror you add lies flat along the x-axis, and so the final argument is the angle to rotate the mirror from the positive x-axis - 45 degrees (or -45 degrees) is common, but any is possible (note that you can rotate all other optical elements too).</p>
+<p>After we add each mirror, we add the name each one to the <em>beampath</em> list, so that our beam takes the right route through them (note also that the beam will hit the mirror at the central point (x,y)). Let’s try drawing the beam now:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">beam</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">beampath</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we have a green beam drawn on the OpticalTable <em>table</em> which follows the path defined by <em>beampath</em>. The nice thing is that the beam path is <em>defined by the positions of the mirrors</em> - try and move one of the mirrors and watch the beam re-route itself. You could also add the mirrors in a different order to <em>beampath</em> if you wanted it to take a different route.</p>
+<p>Now we can add some more optics though, so let’s add these lines <strong>before</strong> we draw the beam:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">L1</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">convex_lens</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mirrorsize</span><span class="p">,</span> <span class="mi">90</span><span class="p">)</span>
+<span class="n">beampath</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">L1</span><span class="p">)</span>
+
+<span class="n">L2</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">concave_lens</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mirrorsize</span><span class="p">,</span> <span class="mi">270</span><span class="p">)</span>
+<span class="n">beampath</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">L2</span><span class="p">)</span>
+
+<span class="n">dump</span> <span class="o">=</span> <span class="n">table</span><span class="o">.</span><span class="n">beam_dump</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">fillcolour</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">beampath</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dump</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Adding two lenses like a telescope, and then putting a beam dump in to catch the beam at the end. There you have it! You can now turn off the grid and save the figure, or add more things, or do whatever you’d like to. You can see a more complex example in the <em>examples</em> folder too - one with multiple beams and things that aren’t all at right angles.</p>
+<img alt="_images/simple_example.png" src="_images/simple_example.png" />
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/simple_example.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyOpticalTable  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">A Simple Example</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, jdpicks.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

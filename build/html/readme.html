@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>PyOpticalTable : Pain-Free Drawing of Optical Setups &#8212; PyOpticalTable  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyOpticalTable  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PyOpticalTable : Pain-Free Drawing of Optical Setups</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="pyopticaltable-pain-free-drawing-of-optical-setups">
+<h1>PyOpticalTable : Pain-Free Drawing of Optical Setups<a class="headerlink" href="#pyopticaltable-pain-free-drawing-of-optical-setups" title="Permalink to this headline">¶</a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p><strong>PyOpticalTable</strong> is a Python library designed to make it easy to create high-quality figures of optical setups, for use in papers, theses, or presentations. The figure creation is all done using <cite>matplotlib &lt;www.matplotlib.org&gt;</cite>, and <strong>PyOpticalTable</strong> essentially provides a user-friendly syntax for drawing the setup.</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="_images/complex_example.png"><img alt="_images/complex_example.png" src="_images/complex_example.png" style="width: 800px;" /></a>
+<figcaption>
+<p><span class="caption-text">Click image for the high-res version.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="why-bother-when-inkscape-exists">
+<h2>Why bother when Inkscape exists?<a class="headerlink" href="#why-bother-when-inkscape-exists" title="Permalink to this headline">¶</a></h2>
+<p>Anyone who has used inkscape to try and draw a complex optical setup will probably have experienced the following:</p>
+<ul class="simple">
+<li><p>Clicking and dragging things to place the optics is easy initially</p></li>
+<li><p>Actually getting it to be precise, so that it looks professional, is harder.</p></li>
+<li><p>When you need to adjust the position of an optic because a proof-reader corrected it, it’s a complete pain to readjust all the subsequent beam routing.</p></li>
+<li><p>When you need to resize the figure because the journal you’re submitting to don’t understand LaTeX, it makes everything look odd because the aspect ratio can change.</p></li>
+<li><p>Inkscape periodically will crash and freeze for no explicable reason.</p></li>
+</ul>
+<p>So whilst Inkscape (or another point-and-click graphics editor) is easy to use at the start, it quickly becomes the bane of your existence. <strong>PyOpticalTable</strong> solves the problems listed above:</p>
+<ul class="simple">
+<li><p>Using PyOpticalTable, you can place all the optics precisely using a coordinate system that is logical and intuitive - and you can set a temporary grid over the table to make finding the coordinates very easy.</p></li>
+<li><p>Using PyOpticalTable, the trajectory of the laser beam(s) is defined <em>by the position of the optics</em>, just like on a real optical table. So if you move an optic, the beam trajectory automatically reroutes itself to compensate.</p></li>
+<li><p>Using PyOpticalTable, all the graphics for the pre-defined optical elements will maintain their appearance if you change the figure size, aspect ratio, or rotation. So whatever you need to do to make the figure fit into where you want it, you won’t have to spend ages updating all of the individual components on the figure.</p></li>
+<li><p>Python IDEs freeze less often than inkscape (although this admittedly depends on IDE choice. Use vim for the sleekest experience.)</p></li>
+</ul>
+<p>The downsides of PyOpticalTable are:</p>
+<ul class="simple">
+<li><p>Using PyOpticalTable will mean there’s a bit of a learning curve if you don’t already know Python.</p></li>
+<li><p>If your optical setup is very simple (like, two mirrors and a box simple), then maybe it’s quicker to just use Inkscape.</p></li>
+</ul>
+</section>
+<section id="scope">
+<h2>Scope<a class="headerlink" href="#scope" title="Permalink to this headline">¶</a></h2>
+<p>Currently the inbuilt optics in PyOpticalTable include mirrors, beamsplitters, lenses, waveplates (any kind of flat transmissive plate - crystals, windows…), and polarisers. Also available are ways to make lasers ('box' sources), and generic point sources where beams can come from. Things like beam dumps are also included. There are a variety of helper functions and routines that make adding/creating your own specific optical elements straightforward too - most things are built up from simpler elements like line objects or arc patches.</p>
+<p>PyOpticalTable currently only deals with perfect laser beams, and so there isn’t any native way to draw a diverging beam that has a realistic divergence affected by a lens (although this can be approximated by using two LaserBeam objects). It is <em>not</em> a ray tracing program, and has been designed around making professional-looking figures for publications/theses - not for accurately simulating all of the optical physics.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">PyOpticalTable : Pain-Free Drawing of Optical Setups</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#why-bother-when-inkscape-exists">Why bother when Inkscape exists?</a></li>
+<li><a class="reference internal" href="#scope">Scope</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/readme.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyOpticalTable  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PyOpticalTable : Pain-Free Drawing of Optical Setups</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, jdpicks.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+    </div>
+  </body>
+</html>

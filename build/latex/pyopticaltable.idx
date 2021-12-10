@@ -1,0 +1,40 @@
+\indexentry{module@\spxentry{module}!pyopticaltable@\spxentry{pyopticaltable}|hyperpage}{13}
+\indexentry{pyopticaltable@\spxentry{pyopticaltable}!module@\spxentry{module}|hyperpage}{13}
+\indexentry{LaserBeam (class in pyopticaltable)@\spxentry{LaserBeam}\spxextra{class in pyopticaltable}|hyperpage}{13}
+\indexentry{colour (pyopticaltable.LaserBeam attribute)@\spxentry{colour}\spxextra{pyopticaltable.LaserBeam attribute}|hyperpage}{13}
+\indexentry{width (pyopticaltable.LaserBeam attribute)@\spxentry{width}\spxextra{pyopticaltable.LaserBeam attribute}|hyperpage}{13}
+\indexentry{style (pyopticaltable.LaserBeam attribute)@\spxentry{style}\spxextra{pyopticaltable.LaserBeam attribute}|hyperpage}{13}
+\indexentry{divergent (pyopticaltable.LaserBeam attribute)@\spxentry{divergent}\spxextra{pyopticaltable.LaserBeam attribute}|hyperpage}{13}
+\indexentry{divergence\_angle (pyopticaltable.LaserBeam attribute)@\spxentry{divergence\_angle}\spxextra{pyopticaltable.LaserBeam attribute}|hyperpage}{13}
+\indexentry{draw() (pyopticaltable.LaserBeam method)@\spxentry{draw()}\spxextra{pyopticaltable.LaserBeam method}|hyperpage}{13}
+\indexentry{OpticalElement (class in pyopticaltable)@\spxentry{OpticalElement}\spxextra{class in pyopticaltable}|hyperpage}{14}
+\indexentry{x (pyopticaltable.OpticalElement attribute)@\spxentry{x}\spxextra{pyopticaltable.OpticalElement attribute}|hyperpage}{14}
+\indexentry{y (pyopticaltable.OpticalElement attribute)@\spxentry{y}\spxextra{pyopticaltable.OpticalElement attribute}|hyperpage}{14}
+\indexentry{mode (pyopticaltable.OpticalElement attribute)@\spxentry{mode}\spxextra{pyopticaltable.OpticalElement attribute}|hyperpage}{14}
+\indexentry{angle (pyopticaltable.OpticalElement attribute)@\spxentry{angle}\spxextra{pyopticaltable.OpticalElement attribute}|hyperpage}{14}
+\indexentry{OpticalTable (class in pyopticaltable)@\spxentry{OpticalTable}\spxextra{class in pyopticaltable}|hyperpage}{14}
+\indexentry{ax (pyopticaltable.OpticalTable attribute)@\spxentry{ax}\spxextra{pyopticaltable.OpticalTable attribute}|hyperpage}{15}
+\indexentry{aspect\_ratio (pyopticaltable.OpticalTable attribute)@\spxentry{aspect\_ratio}\spxextra{pyopticaltable.OpticalTable attribute}|hyperpage}{15}
+\indexentry{angled\_line() (pyopticaltable.OpticalTable method)@\spxentry{angled\_line()}\spxextra{pyopticaltable.OpticalTable method}|hyperpage}{15}
+\indexentry{beam\_dump() (pyopticaltable.OpticalTable method)@\spxentry{beam\_dump()}\spxextra{pyopticaltable.OpticalTable method}|hyperpage}{15}
+\indexentry{beamsplitter\_cube() (pyopticaltable.OpticalTable method)@\spxentry{beamsplitter\_cube()}\spxextra{pyopticaltable.OpticalTable method}|hyperpage}{16}
+\indexentry{box() (pyopticaltable.OpticalTable method)@\spxentry{box()}\spxextra{pyopticaltable.OpticalTable method}|hyperpage}{17}
+\indexentry{box\_source() (pyopticaltable.OpticalTable method)@\spxentry{box\_source()}\spxextra{pyopticaltable.OpticalTable method}|hyperpage}{17}
+\indexentry{concave\_lens() (pyopticaltable.OpticalTable method)@\spxentry{concave\_lens()}\spxextra{pyopticaltable.OpticalTable method}|hyperpage}{18}
+\indexentry{concave\_mirror() (pyopticaltable.OpticalTable method)@\spxentry{concave\_mirror()}\spxextra{pyopticaltable.OpticalTable method}|hyperpage}{19}
+\indexentry{convex\_lens() (pyopticaltable.OpticalTable method)@\spxentry{convex\_lens()}\spxextra{pyopticaltable.OpticalTable method}|hyperpage}{19}
+\indexentry{generic\_circle() (pyopticaltable.OpticalTable method)@\spxentry{generic\_circle()}\spxextra{pyopticaltable.OpticalTable method}|hyperpage}{20}
+\indexentry{mirror() (pyopticaltable.OpticalTable method)@\spxentry{mirror()}\spxextra{pyopticaltable.OpticalTable method}|hyperpage}{20}
+\indexentry{point\_source() (pyopticaltable.OpticalTable method)@\spxentry{point\_source()}\spxextra{pyopticaltable.OpticalTable method}|hyperpage}{21}
+\indexentry{set\_label() (pyopticaltable.OpticalTable method)@\spxentry{set\_label()}\spxextra{pyopticaltable.OpticalTable method}|hyperpage}{21}
+\indexentry{transmissive\_cube() (pyopticaltable.OpticalTable method)@\spxentry{transmissive\_cube()}\spxextra{pyopticaltable.OpticalTable method}|hyperpage}{22}
+\indexentry{transmissive\_plate() (pyopticaltable.OpticalTable method)@\spxentry{transmissive\_plate()}\spxextra{pyopticaltable.OpticalTable method}|hyperpage}{22}
+\indexentry{Tools (class in pyopticaltable)@\spxentry{Tools}\spxextra{class in pyopticaltable}|hyperpage}{23}
+\indexentry{cosd() (pyopticaltable.Tools method)@\spxentry{cosd()}\spxextra{pyopticaltable.Tools method}|hyperpage}{23}
+\indexentry{deg\_to\_rad() (pyopticaltable.Tools method)@\spxentry{deg\_to\_rad()}\spxextra{pyopticaltable.Tools method}|hyperpage}{23}
+\indexentry{get\_label\_coords() (pyopticaltable.Tools method)@\spxentry{get\_label\_coords()}\spxextra{pyopticaltable.Tools method}|hyperpage}{23}
+\indexentry{get\_midpoint() (pyopticaltable.Tools method)@\spxentry{get\_midpoint()}\spxextra{pyopticaltable.Tools method}|hyperpage}{24}
+\indexentry{inch\_to\_mm() (pyopticaltable.Tools method)@\spxentry{inch\_to\_mm()}\spxextra{pyopticaltable.Tools method}|hyperpage}{24}
+\indexentry{mm\_to\_inch() (pyopticaltable.Tools method)@\spxentry{mm\_to\_inch()}\spxextra{pyopticaltable.Tools method}|hyperpage}{24}
+\indexentry{rotate\_point() (pyopticaltable.Tools method)@\spxentry{rotate\_point()}\spxextra{pyopticaltable.Tools method}|hyperpage}{24}
+\indexentry{sind() (pyopticaltable.Tools method)@\spxentry{sind()}\spxextra{pyopticaltable.Tools method}|hyperpage}{24}
