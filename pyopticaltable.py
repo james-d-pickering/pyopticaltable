@@ -23,7 +23,7 @@ allowed_types = ('mirror', 'concave_lens', 'convex_lens',
                  'beamsplitter_cube', 'generic_box',
                  'box_source', 'point_source',
                  'beam_dump', 'generic_circle',
-                 'concave_mirror', 'triangular_prism') # added 'triangular_prism'
+                 'concave_mirror')
 
 allowed_modes = ('r', 't')
 
@@ -52,7 +52,7 @@ class Tools:
         """Convert degrees to radians."""
         return x * (np.pi/180)
 
-    def rotate_point(point, angle):
+    def rotate_point(point, angle, origin=(0,0)):
         """
         Rotate a point by an angle theta around the origin.
         
@@ -70,10 +70,14 @@ class Tools:
             point_rot : tuple
                 Coordinates of the rotated point (x_rot, y_rot).
         """
-        x_rot = point[0]*np.cos(Tools.deg_to_rad(angle)) - \
-            point[1]*np.sin(Tools.deg_to_rad(angle))
-        y_rot = point[0]*np.sin(Tools.deg_to_rad(angle)) + \
-            point[1]*np.cos(Tools.deg_to_rad(angle))
+        
+        #JDP fixed so it actually rotates about the origin 
+        x_rot = (point[0]-origin[0])*np.cos(Tools.deg_to_rad(angle)) - \
+            (point[1]-origin[1])*np.sin(Tools.deg_to_rad(angle)) + origin[0]
+        
+        y_rot = (point[0]-origin[0])*np.sin(Tools.deg_to_rad(angle)) + \
+            (point[1]-origin[1])*np.cos(Tools.deg_to_rad(angle)) + origin[1]
+        
         point_rot = (x_rot, y_rot)
         return point_rot
 
@@ -152,12 +156,14 @@ class Tools:
         elif label_pos == 'right':
             label_x = x + offset
             label_y = y
+        elif label_pos == 'centre':
+            label_x = x
+            label_y = y
         else:
             raise ValueError(
                 'Invalid label position - should be "top", "bottom", "left", \
-                    or "right".')
+                  "right", or "centre".')
         return label_x, label_y
-
 
 
 class OpticalElement:
@@ -656,11 +662,10 @@ class OpticalTable:
         self.ax.plot([coords1[1], coords2[1]], [
                      coords1[3], coords2[3]], color=colour, zorder=zorder)
         if fill:
-            l1 = [coords1[0], coords2[0]]  # x-coordinates of left edge of the area filled 
-            l2 = [coords1[2], coords2[2]]  # y-coordinates of bottom edge of the area filled
-            l3 = [coords1[3], coords2[3]]  # y-coordinates of top edge of the area filled
+            l1 = [coords1[0], coords1[1]]
+            l2 = [coords1[2], coords1[2]]
+            l3 = [coords2[2], coords2[2]]
             self.ax.fill_between(l1, l2, l3, color=fillcolour, zorder=zorder)
-
         self.set_label(self.ax, x, y, size, label, label_pos,
                        labelpad, textcolour, fontsize=fontsize)
         return OpticalElement(x, y, 't', angle, 'transmissive_plate')
@@ -766,7 +771,7 @@ class OpticalTable:
                        labelpad, textcolour, fontsize=fontsize)
         return OpticalElement(x, y, 't', angle, 'beamsplitter_cube')
 
-    def box(self, x, y, size_x, size_y, angle, colour='k', standalone=False,
+    def box(self, x, y, size_x, size_y, angle, colour='k', linestyle='-', standalone=False,
             label=None, label_pos='top', labelpad=0.25, textcolour='k', 
             fontsize=fontparams['fontsize']):
         """
@@ -790,6 +795,8 @@ class OpticalTable:
             Rotation of the box anticlockwise from the positive x-axis, in degrees.
         colour : string, optional
             Colour of the box edge, any matplotlib supported colour works. The default is 'k'.
+        linestyle : string, optional
+            Linestyle for the box edge, any matplotlib support style works. Default is '-' (unbroken).
         standalone : bool, optional
             If true then the box is drawn on the table as it is, otherwise just
             the corner coordinates are returned for use in other functions. The default is False.
@@ -822,19 +829,19 @@ class OpticalTable:
         corners = ((x-offset_x, y-offset_y), (x+offset_x, y-offset_y),
                    (x+offset_x, y+offset_y), (x-offset_x, y+offset_y))
 
-        corners_rot = [Tools.rotate_point(corner, angle) for corner in corners]
+        corners_rot = [Tools.rotate_point(corner, angle, origin=(x,y)) for corner in corners]
 
         for i, _ in enumerate(corners_rot[0:-1]):
             self.ax.plot([corners_rot[i][0], corners_rot[i+1][0]],
-                         [corners_rot[i][1], corners_rot[i+1][1]], color=colour)
+                         [corners_rot[i][1], corners_rot[i+1][1]], color=colour, ls=linestyle)
             if i == 2:  # JDP catch the final iteration to close the box
                 self.ax.plot([corners_rot[i+1][0], corners_rot[0][0]],
                              [corners_rot[i+1][1], corners_rot[0][1]], 
-                             color=colour)
+                             color=colour, ls=linestyle)
 
         if standalone:
             self.set_label(self.ax, x, y, 0, label,
-                           label_pos, labelpad, textcolour, fontsize) # added fontsize
+                           label_pos, labelpad, textcolour)
             return OpticalElement(x, y, 't', angle, 'generic_box')
         else:
             return corners_rot
@@ -942,8 +949,9 @@ class OpticalTable:
             Instance of the OpticalElement class for this optic.
 
         """
-        self.set_label(self.ax, x, y, label, label_pos,
-                       labelpad, textcolour, fontsize=fontsize)
+        if label:
+            self.set_label(self.ax, x, y, label, label_pos,
+                           labelpad, textcolour, fontsize=fontsize)
         return OpticalElement(x, y, 't', None, 'point_source')
 
     def beam_dump(self, x, y, size, angle, colour='k', fillcolour='k',
@@ -1039,76 +1047,6 @@ class OpticalTable:
                        labelpad, textcolour, fontsize=fontsize)
         self.ax.add_patch(circle)
         return OpticalElement(x, y, 't', None, 'generic_circle')
-
-    # added own function
-    def triangular_prism(self, x, y, size, angle, colour='k', fillcolour='None',
-                     label=None, label_pos='top', labelpad=0.25, 
-                     textcolour='k', fontsize=fontparams['fontsize']):
-        """
-        Draw a triangular prism on the optical table.
-
-        The triangle is centered at (x, y) with the beam passing through the center.
-
-        Parameters
-        ----------
-        x : float
-            x-coordinate of the centre of the prism.
-        y : float
-            y-coordinate of the centre of the prism.
-        size : float
-            Size of the prism (length of each side).
-        angle : float
-            Rotation of the prism anticlockwise from the positive x-axis, in degrees.
-        colour : string, optional
-            Colour of the prism edges. The default is 'k'.
-        fillcolour : string, optional
-            Colour to fill the prism with. The default is 'None' (no fill).
-        label : string, optional
-            Text to put in the label for the prism. The default is None (no label).
-        label_pos : string, optional
-            Position of the label relative to the prism ('top', 'bottom', 'left', 'right').
-            The default is "bottom".
-        labelpad : float, optional
-            Additional padding to add between the label and the prism. The default is 0.25.
-        textcolour : string, optional
-            Colour of the label text. The default is 'k' (black).
-        fontsize : float, optional
-            Font size for the label text. The default is fontparams['fontsize'].
-
-        Returns
-        -------
-        OpticalElement
-            Instance of the OpticalElement class for this optic.
-
-        """
-        # Calculate the coordinates of the triangle vertices
-        height = size * (3 ** 0.5) / 2  # Height of the equilateral triangle
-        corners = [(x, y + height / 3),
-                (x - size / 2, y - height / 3),
-                (x + size / 2, y - height / 3)]
-        
-        # Rotate the corners around the origin (0, 0)
-        corners_rot = [Tools.rotate_point(corner, angle) for corner in corners]
-        
-        # Calculate the centroid of the rotated vertices
-        centroid = (sum(x for x, y in corners_rot) / 3, sum(y for x, y in corners_rot) / 3)
-        
-        # Translate the rotated vertices to (x, y)
-        corners_rot = [(corner[0] + x - centroid[0], corner[1] + y - centroid[1]) for corner in corners_rot]
-
-        # Plot the triangle
-        triangle = mpl.patches.Polygon(corners_rot, closed=True, edgecolor=colour, facecolor=fillcolour)
-        self.ax.add_patch(triangle)
-
-        # Add label if provided
-        if label:
-            self.set_label(self.ax, x, y, size, label, label_pos, labelpad, textcolour, fontsize=fontsize)
-
-        return OpticalElement(x, y, 't', angle, 'triangular_prism')
-
-
-
-
 
 
 class LaserBeam:
