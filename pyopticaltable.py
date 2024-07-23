@@ -156,10 +156,13 @@ class Tools:
         elif label_pos == 'right':
             label_x = x + offset
             label_y = y
+        elif label_pos == 'centre':
+            label_x = x
+            label_y = y
         else:
             raise ValueError(
                 'Invalid label position - should be "top", "bottom", "left", \
-                    or "right".')
+                  "right", or "centre".')
         return label_x, label_y
 
 
@@ -523,7 +526,7 @@ class OpticalTable:
         # the beam hits when the mirror is rotated
         # the entered x,y are where the beam will hit, and the mirror is translated to
         # ensure that this is the turning point of the long axis as the mirror is rotated
-        edge_point_rot = Tools.rotate_point(edge_point_offset, angle)
+        edge_point_rot = Tools.rotate_point(edge_point_offset, angle, origin=(0,0))
         arc = mpl.patches.Arc((x-edge_point_rot[0], y-edge_point_rot[1]), 
                               size_width, size_height, angle=angle,
                               theta1=0, theta2=180, color=colour)
@@ -770,7 +773,7 @@ class OpticalTable:
                        labelpad, textcolour, fontsize=fontsize)
         return OpticalElement(x, y, 't', angle, 'beamsplitter_cube')
 
-    def box(self, x, y, size_x, size_y, angle, colour='k', standalone=False,
+    def box(self, x, y, size_x, size_y, angle, colour='k', linestyle='-', standalone=False,
             label=None, label_pos='top', labelpad=0.25, textcolour='k', 
             fontsize=fontparams['fontsize']):
         """
@@ -794,6 +797,8 @@ class OpticalTable:
             Rotation of the box anticlockwise from the positive x-axis, in degrees.
         colour : string, optional
             Colour of the box edge, any matplotlib supported colour works. The default is 'k'.
+       linestyle : string, optional
+            Linestyle for the box edge, any matplotlib support style works. Default is '-' (unbroken).
         standalone : bool, optional
             If true then the box is drawn on the table as it is, otherwise just
             the corner coordinates are returned for use in other functions. The default is False.
@@ -826,15 +831,15 @@ class OpticalTable:
         corners = ((x-offset_x, y-offset_y), (x+offset_x, y-offset_y),
                    (x+offset_x, y+offset_y), (x-offset_x, y+offset_y))
 
-        corners_rot = [Tools.rotate_point(corner, angle) for corner in corners]
+        corners_rot = [Tools.rotate_point(corner, angle, origin=(x,y)) for corner in corners]
 
         for i, _ in enumerate(corners_rot[0:-1]):
             self.ax.plot([corners_rot[i][0], corners_rot[i+1][0]],
-                         [corners_rot[i][1], corners_rot[i+1][1]], color=colour)
+                         [corners_rot[i][1], corners_rot[i+1][1]], color=colour, ls=linestyle)
             if i == 2:  # JDP catch the final iteration to close the box
                 self.ax.plot([corners_rot[i+1][0], corners_rot[0][0]],
                              [corners_rot[i+1][1], corners_rot[0][1]], 
-                             color=colour)
+                             color=colour, ls=linestyle)
 
         if standalone:
             self.set_label(self.ax, x, y, 0, label,
@@ -946,8 +951,9 @@ class OpticalTable:
             Instance of the OpticalElement class for this optic.
 
         """
-        self.set_label(self.ax, x, y, label, label_pos,
-                       labelpad, textcolour, fontsize=fontsize)
+        if label:
+            self.set_label(self.ax, x, y, label, label_pos,
+                           labelpad, textcolour, fontsize=fontsize)
         return OpticalElement(x, y, 't', None, 'point_source')
 
     def beam_dump(self, x, y, size, angle, colour='k', fillcolour='k',
@@ -1092,7 +1098,7 @@ class OpticalTable:
                 (x + size / 2, y - height / 3)]
         
         # Rotate the corners around the origin (0, 0)
-        corners_rot = [Tools.rotate_point(corner, angle) for corner in corners]
+        corners_rot = [Tools.rotate_point(corner, angle, origin=(x,y)) for corner in corners]
         
         # Calculate the centroid of the rotated vertices
         centroid = (sum(x for x, y in corners_rot) / 3, sum(y for x, y in corners_rot) / 3)
