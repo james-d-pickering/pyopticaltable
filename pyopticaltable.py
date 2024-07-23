@@ -1190,3 +1190,4 @@ class LaserBeam:
                               color=self.colour,
                               linewidth=self.width,
                               linestyle=self.style)
+
